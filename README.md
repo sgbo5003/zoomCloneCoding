@@ -36,3 +36,12 @@ html(lang="en")
       h2 welcome to Zoom
     script(src="/public/js/app.js")
 ```
+
+## #1 CHAT WITH WEBSOCKETS
+------- 
+### #1.2 WebSockets in NodeJs
+- `npm i ws` 명령어로 websocket 설치
+
+### #1.3 WebSocket Events
+- 웹소켓 이벤트 알아보기
+- 웹소켓 생성 및 연동
