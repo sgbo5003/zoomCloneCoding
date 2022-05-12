@@ -26,7 +26,7 @@ wss.on("connection", (socket) => {
   socket.on("message", (msg) => {
     const message = JSON.parse(msg);
     if(message.type === "new_message") { // 매세지 type인 경우
-      sockets.forEach((aSocket) => aSocket.send(`${socket.nickname}: ${message.payload}`));
+      sockets.forEach((aSocket) => aSocket.send(`${socket.nickname}: ${message.payload}`)); // 자신과 다른 브라우저에 전송
     } else if(message.type === "nickname") { // 닉네임 type인 경우
       socket["nickname"] = message.payload;
     }
