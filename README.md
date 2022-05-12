@@ -306,6 +306,30 @@ server.listen(3000, handleListen);
     });
     ```
 
+### #2.3 Recap
+> socket.emit()
+> 
+- `socket.emit(인자1, 인자2, 인자3, 인자4, ...)`
+    - 인자 1: event 이름
+    - 인자 2: 보내고 싶은 payload
+    - 인자 3~ : 원하는만큼 쓸 수 있다. (무제한)
+    - 함수를 인자로 쓰고 싶다면 꼭 마지막에 와야 한다.
+        
+        ```tsx
+        // 프론트
+        socket.emit("enter_room", { payload: input.value }, 1, "hi", true);
+        
+        // 백엔드
+        wsServer.on("connection", (socket) => {
+          socket.on("enter_room", (a, b, c, d) => {
+            console.log(a, b, c, d);
+          });
+        });
+        ```
+        
+- `socket.emit()` 과 `socket.on()` 에는 같은 이름을 사용해야 한다.
+
+
 
 
 

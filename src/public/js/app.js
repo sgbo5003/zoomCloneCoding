@@ -6,9 +6,7 @@ const form = welcome.querySelector("form");
 function handleSubmit(event) {
   event.preventDefault();
   const input = form.querySelector("input");
-  socket.emit("enter_room", { payload: input.value }, () => {
-    console.log("Server is done");
-  }); // socket.emit(첫번째 인자: event 이름, 두번째 인자: 보내고 싶은 payload, 세번째 인자: 서버에서 호출하는 function)
+  socket.emit("enter_room", { payload: input.value }, 1, "hi", true); // socket.emit(첫번째 인자: event 이름, 두번째 인자: 보내고 싶은 payload, 세번째 인자: 서버에서 호출하는 function)
   input.value = ""
 }
 
