@@ -227,6 +227,87 @@ server.listen(3000, handleListen);
 - Socket IO는 프론트와 백엔드 간 실시간 통신을 가능하게 해주는 프레임워크 또는 라이브러리
 - 프론트와 백엔드간 실시간 통신을 websocket을 이용해서 할 수 있다.
 
+### #2.1 Installing SocketIO
+- `npm i socket.io` 명령어로 socket.io 설치
+- 백엔드 ↔ 프론트엔드 [socket.io](http://socket.io) 연결
+    - 백엔드
+        
+        ```tsx
+        import http from "http";
+        import SocketIo from "socket.io";
+        import express from "express";
+        // import Websocket from "ws";
+        
+        const app = express();
+        
+        app.set("view engine", "pug");
+        app.set("views", __dirname + "/views");
+        app.use("/public", express.static(__dirname + "/public"));
+        app.get("/", (_, res) => res.render("home"));
+        app.get("/*", (_, res) => res.redirect("/"));
+        
+        const httpServer = http.createServer(app);
+        const wsServer = SocketIo(httpServer);
+        
+        wsServer.on("connection", socket => {
+          console.log(socket);
+        });
+        
+        const handleListen = () => console.log(`Listening on http://localhost:3000`);
+        httpServer.listen(3000, handleListen);
+        ```
+        
+    - 프론트엔드
+        
+        ```tsx
+        const socket = io(); // io는 자동적으로 back-end socket.io와 연결 해주는 function
+        ```
+
+### #2.2 SocketIO is Amazing
+
+- socket.io 를 사용해 방 생성
+- `socket.emit(인자1, 인자2, 인자3)`
+    - 인자 1: event 이름
+    - 인자 2: 보내고 싶은 payload
+    - 인자 3: 서버에서 호출하는 function
+- 프론트
+    
+    ```tsx
+    const socket = io(); // io는 자동적으로 back-end socket.io와 연결 해주는 function
+    
+    const welcome = document.getElementById("welcome");
+    const form = welcome.querySelector("form");
+    
+    function handleSubmit(event) {
+      event.preventDefault();
+      const input = form.querySelector("input");
+      socket.emit("enter_room", { payload: input.value }, () => {
+        console.log("Server is done");
+      }); // socket.emit(첫번째 인자: event 이름, 두번째 인자: 보내고 싶은 payload, 세번째 인자: 서버에서 호출하는 function)
+      input.value = ""
+    }
+    
+    form.addEventListener("submit", handleSubmit);
+    ```
+    
+- 백엔드
+    
+    ```tsx
+    const httpServer = http.createServer(app);
+    const wsServer = SocketIo(httpServer);
+    
+    wsServer.on("connection", (socket) => {
+      socket.on("enter_room", (msg, done) => {
+        console.log(msg);
+        setTimeout(() => {
+          done();
+        }, 10000);
+      });
+    });
+    ```
+
+
+
 
 
 
