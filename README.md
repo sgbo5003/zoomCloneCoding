@@ -219,5 +219,14 @@ server.listen(3000, handleListen);
     });
     ```
 
+## #2 SOCKETIO
+------- 
+### #2.0 SocketIO vs WebSockets
+> Socket IO
+> 
+- Socket IO는 프론트와 백엔드 간 실시간 통신을 가능하게 해주는 프레임워크 또는 라이브러리
+- 프론트와 백엔드간 실시간 통신을 websocket을 이용해서 할 수 있다.
+
+
 
 
