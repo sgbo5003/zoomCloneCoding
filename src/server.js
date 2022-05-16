@@ -23,6 +23,13 @@ wsServer.on("connection", (socket) => {
     done();
     socket.to(roomName).emit("welcome"); // 방안에 있는 모든 사람들에게 emit
   });
+  socket.on("disconnecting", () => { // disconnect 했을 때 event
+    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+  });
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_message", msg);
+    done();
+  });
 });
 
 

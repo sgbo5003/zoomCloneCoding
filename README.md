@@ -355,6 +355,43 @@ server.listen(3000, handleListen);
     socket.to(roomName).emit("welcome");
     ```
 
+### #2.6 Room Notifications
+> disconnecting event
+> 
+
+```tsx
+socket.on("disconnecting", () => { // disconnect 했을 때 event
+  socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+});
+```
+
+> 메세지 주고받기
+> 
+- 프론트
+
+```tsx
+function handleMessageSubmit(event) {
+  event.preventDefault();
+  const input = room.querySelector("input");
+  const value = input.value;
+  socket.emit("new_message", input.value, roomName, () => {
+    addMessage(`You: ${value}`);
+  });
+  input.value = "";
+}
+
+socket.on("new_message", addMessage);
+```
+
+- 백엔드
+
+```tsx
+socket.on("new_message", (msg, room, done) => {
+  socket.to(room).emit("new_message", msg);
+  done();
+});
+```
+
 
 
 
