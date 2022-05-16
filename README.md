@@ -336,6 +336,25 @@ server.listen(3000, handleListen);
 - `socket.rooms` : socket이 어떤 방에 있는지 알수 있다.
 - `socket.id` : 방의 room id 를 알 수 있다.
 
+### #2.5 Room Messages
+> socket 관련 함수 2
+> 
+- `socket.to(room name).emit(event name);`
+- 프론트와 연결된 event를 해당 room(room name)에 있는 모든 사람들에게 emit
+- 프론트 코드
+    
+    ```tsx
+    socket.on("welcome", () => { // "welcome" => event name
+      addMessage("someone joined!");
+    });
+    ```
+    
+- 백엔드 코드
+    
+    ```tsx
+    socket.to(roomName).emit("welcome");
+    ```
+
 
 
 
