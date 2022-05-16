@@ -329,6 +329,13 @@ server.listen(3000, handleListen);
         
 - `socket.emit()` 과 `socket.on()` 에는 같은 이름을 사용해야 한다.
 
+### #2.4 Rooms
+> socket 관련 함수들
+> 
+- `socket.join()` : 방에 들어가기 위해 쓰는 함수
+- `socket.rooms` : socket이 어떤 방에 있는지 알수 있다.
+- `socket.id` : 방의 room id 를 알 수 있다.
+
 
 
 
