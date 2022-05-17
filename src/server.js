@@ -25,20 +25,24 @@ function publicRooms() {
   return publicRooms;
 }
 
+function countRoom(roomName) {
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+}
+
 wsServer.on("connection", (socket) => {
   socket.onAny((event) => {
     console.log(wsServer.sockets.adapter);
     console.log(`Socket Event: ${event}`);
   });
-  socket.on("enter_room", (roomName,  nickname, done) => {
+  socket.on("enter_room", (roomName, nickname, done) => {
     socket.join(roomName);
     socket["nickname"] = nickname;
     done();
-    socket.to(roomName).emit("welcome", socket.nickname); // 방안에 있는 모든 사람들에게 emit
+    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName)); // 방안에 있는 모든 사람들에게 emit
     wsServer.sockets.emit("room_change", publicRooms()); // 전체에 emit
   });
   socket.on("disconnecting", () => { // disconnect 했을 때 event
-    socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
+    socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1));
   });
   socket.on("disconnect", () => {
     wsServer.sockets.emit("room_change", publicRooms());
