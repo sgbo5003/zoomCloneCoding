@@ -14,8 +14,20 @@ app.get("/*", (_, res) => res.redirect("/"));
 const httpServer = http.createServer(app);
 const wsServer = SocketIo(httpServer);
 
+function publicRooms() {
+  const {sockets: {adapter: {sids, rooms}}} = wsServer; // == const {rooms, sids} = wsServer.sockets.adapter;
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if(sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+  return publicRooms;
+}
+
 wsServer.on("connection", (socket) => {
   socket.onAny((event) => {
+    console.log(wsServer.sockets.adapter);
     console.log(`Socket Event: ${event}`);
   });
   socket.on("enter_room", (roomName,  nickname, done) => {

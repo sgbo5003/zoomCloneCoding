@@ -539,6 +539,31 @@ socket.on("new_message", (msg, room, done) => {
     httpServer.listen(3000, handleListen);
     ```
 
+### #2.8 Room Count part One
+
+> Adapter
+> 
+- Adapter가 기본적으로 하는 일은 다른 서버들 사이에 실시간 어플리케이션을 동기화 하는 것이다.
+
+> socket.IO의 내부기능 (private room, public room 구분하기)
+> 
+- sids : 개인방
+- rooms: 개인방, 공개방
+- 코드
+    
+    ```jsx
+    function publicRooms() {
+      const {sockets: {adapter: {sids, rooms}}} = wsServer; // == const {rooms, sids} = wsServer.sockets.adapter;
+      const publicRooms = [];
+      rooms.forEach((_, key) => {
+        if(sids.get(key) === undefined) { // public room을 구분하기 위해
+          publicRooms.push(key);
+        }
+      });
+      return publicRooms;
+    }
+    ```
+
 
 
 
