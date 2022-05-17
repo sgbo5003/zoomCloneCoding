@@ -35,9 +35,13 @@ wsServer.on("connection", (socket) => {
     socket["nickname"] = nickname;
     done();
     socket.to(roomName).emit("welcome", socket.nickname); // 방안에 있는 모든 사람들에게 emit
+    wsServer.sockets.emit("room_change", publicRooms()); // 전체에 emit
   });
   socket.on("disconnecting", () => { // disconnect 했을 때 event
     socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
+  });
+  socket.on("disconnect", () => {
+    wsServer.sockets.emit("room_change", publicRooms());
   });
 
   socket.on("new_message", (msg, room, done) => {

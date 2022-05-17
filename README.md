@@ -564,6 +564,59 @@ socket.on("new_message", (msg, room, done) => {
     }
     ```
 
+### #2.9 Room Count part Two
+
+> 방 바뀔때마다 실시간으로 알려주기
+> 
+- `server.sockets.emit()`
+    - message를 모두에게 보내줄 수 있다.
+- 프론트
+    
+    ```jsx
+    socket.on("room_change", (rooms) => {
+      const roomList = welcome.querySelector("ul");
+      roomList.innerHTML = "";
+      if(rooms.length === 0) { // 방이 없다면
+        return;
+      }
+      rooms.forEach(room => {
+        const li = document.createElement("li");
+        li.innerText = room;
+        roomList.append(li);
+      });
+    });
+    ```
+    
+- 백엔드
+    
+    ```jsx
+    function publicRooms() {
+      const {sockets: {adapter: {sids, rooms}}} = wsServer; // == const {rooms, sids} = wsServer.sockets.adapter;
+      const publicRooms = [];
+      rooms.forEach((_, key) => {
+        if(sids.get(key) === undefined) {
+          publicRooms.push(key);
+        }
+      });
+      return publicRooms;
+    }
+    
+    socket.on("enter_room", (roomName,  nickname, done) => {
+        socket.join(roomName);
+        socket["nickname"] = nickname;
+        done();
+        socket.to(roomName).emit("welcome", socket.nickname); // 방안에 있는 모든 사람들에게 emit
+        wsServer.sockets.emit("room_change", publicRooms()); // 전체에 emit
+      });
+      socket.on("disconnecting", () => { // disconnect 했을 때 event
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
+      });
+      socket.on("disconnect", () => {
+        wsServer.sockets.emit("room_change", publicRooms());
+      });
+    
+    ```
+
 
 
 
