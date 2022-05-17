@@ -656,6 +656,29 @@ socket.on("new_message", (msg, room, done) => {
       });
     ```
 
+### #2.11 Admin Panel
+
+> socket.io를 위한 admin panel
+> 
+- `npm i @socket.io/admin-ui` 를 통해 설치
+- `import { instrument } from "@socket.io/admin-ui";`
+- 기존 `import SocketIo from "socket.io";` → `import {Server} from "socket.io";` 로 변경
+- 설정 코드 추가
+    
+    ```jsx
+    const wsServer = new Server(httpServer, {
+      cors: {
+        origin: ["https://admin.socket.io"],
+        credentials: true,
+      },
+    });
+    
+    instrument(wsServer, {
+      auth: false
+    });
+    ```
+
+
 
 
 
