@@ -423,7 +423,121 @@ socket.on("new_message", (msg, room, done) => {
     socket["nickname"] = "Anon";
     socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
     ```
-
+> 코드 첼린지
+> 
+- 목표 : 방 입장 전에 닉네임을 정하고 들어가기
+- 프론트
+    
+    ```jsx
+    const socket = io(); // io는 자동적으로 back-end socket.io와 연결 해주는 function
+    
+    const welcome = document.getElementById("welcome");
+    const form = welcome.querySelector("form");
+    const room = document.getElementById("room");
+    
+    room.hidden = true;
+    
+    let roomName;
+    
+    function addMessage(message) {
+      const ul = room.querySelector("ul");
+      const li = document.createElement("li");
+      li.innerText = message;
+      ul.appendChild(li);
+    }
+    
+    function handleMessageSubmit(event) {
+      event.preventDefault();
+      const input = room.querySelector("#msg input");
+      const value = input.value;
+      socket.emit("new_message", input.value, roomName, () => {
+        addMessage(`You: ${value}`);
+      });
+      input.value = "";
+    }
+    
+    function handleNicknameSubmit(event) {
+      event.preventDefault();
+      const input = room.querySelector("#name input");
+      socket.emit("nickname", input.value);
+    }
+    
+    function showRoom() {
+      welcome.hidden = true;
+      room.hidden = false;
+      const h3 = room.querySelector("h3");
+      h3.innerText = `Room ${roomName}`;
+      const msgForm = room.querySelector("#msg");
+      // const nameForm = room.querySelector("#name");
+      msgForm.addEventListener("submit", handleMessageSubmit);
+      // nameForm.addEventListener("submit", handleNicknameSubmit);
+    }
+    
+    function handleSubmit(event) {
+      event.preventDefault();
+      const roomNameInput = form.querySelector("#roomName");
+      const nickNameInput = form.querySelector("#nickName");
+      socket.emit("enter_room", roomNameInput.value, nickNameInput.value, showRoom); // socket.emit(첫번째 인자: event 이름, 두번째 인자: 보내고 싶은 payload, 세번째 인자: 서버에서 호출하는 function)
+      roomName = roomNameInput.value;
+      input.value = "";
+    }
+    
+    form.addEventListener("submit", handleSubmit);
+    
+    socket.on("welcome", (user) => {
+      addMessage(`${user} joined!`);
+    });
+    
+    socket.on("bye", (left) => {
+      addMessage(`${left} left...`);
+    });
+    
+    socket.on("new_message", addMessage);
+    ```
+    
+- 백엔드
+    
+    ```jsx
+    import http from "http";
+    import SocketIo from "socket.io";
+    import express from "express";
+    // import Websocket from "ws";
+    
+    const app = express();
+    
+    app.set("view engine", "pug");
+    app.set("views", __dirname + "/views");
+    app.use("/public", express.static(__dirname + "/public"));
+    app.get("/", (_, res) => res.render("home"));
+    app.get("/*", (_, res) => res.redirect("/"));
+    
+    const httpServer = http.createServer(app);
+    const wsServer = SocketIo(httpServer);wwww`
+    
+    wsServer.on("connection", (socket) => {
+      socket["nickname"] = "Anon";
+      socket.onAny((event) => {
+        console.log(`Socket Event: ${event}`);
+      });
+      socket.on("enter_room", (roomName, nickname, done) => {
+        socket.join(roomName);
+        socket["nickname"] = nickname;
+        done();
+        socket.to(roomName).emit("welcome", socket.nickname); // 방안에 있는 모든 사람들에게 emit
+      });
+      socket.on("disconnecting", () => { // disconnect 했을 때 event
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
+      });
+      socket.on("new_message", (msg, room, done) => {
+        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
+        done();
+      });
+      // socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
+    });
+    
+    const handleListen = () => console.log(`Listening on http://localhost:3000`);
+    httpServer.listen(3000, handleListen);
+    ```
 
 
 

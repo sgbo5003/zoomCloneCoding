@@ -11,15 +11,13 @@ html(lang="en")
       h1 Zoom
     main 
       div#welcome
-        form
-          input(placeholder="room name", required, type="Text")
+        form#welcomeForm
+          input#roomName(placeholder="room name", required, type="Text")
+          input#nickName(placeholder="nickname", required, type="Text")
           button Enter Room
       div#room
         h3
         ul
-        form#name
-          input(placeholder="nickname", required, type="Text")
-          button Save
         form#msg
           input(placeholder="message", required, type="Text")
           button Send
